@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Arquetipos SGC</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f6fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        .custom-radio {
+            cursor: pointer;
+            padding: 0.5rem 1.2rem;
+            border-radius: 9999px;
+            border: 1px solid #cbd5e1;
+            transition: all 0.2s;
+        }
+
+        input[type="radio"]:checked + .custom-radio {
+            background-color: #0059D1;
+            color: white;
+            border-color: #003776;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app" class="bg-white p-10 rounded-3xl shadow-2xl flex flex-col items-center"></div>
+
+<script>
+const archetypes = [
+    {
+        name: "Transporte",
+        title: "Revisando Arquetipo de Transporte...",
+        questions: [
+            "¿El servicio o el personal se encuadran en el CCT 40/89?",
+            "¿Se utilizan vehículos habilitados con choferes registrados?",
+            "¿Incluye traslados interprovinciales o internacionales?",
+            "¿Se controla km o carga/descarga?",
+            "¿Roles de chofer, operador logístico o similar?"
+        ]
+    },
+    {
+        name: "UOCRA",
+        title: "Revisando Arquetipo UOCRA...",
+        questions: [
+            "¿Personal bajo CCT 76/75?",
+            "¿Incluye obra civil o montaje?",
+            "¿Intervienen gremios de construcción?",
+            "¿Requiere bolsa UOCRA?",
+            "¿Aplica Decreto 911/96?"
+        ]
+    },
+    {
+        name: "Transporte Extranjero",
+        title: "Revisando Transporte Extranjero...",
+        questions: [
+            "¿Hay cruce de fronteras?",
+            "¿Personal extranjero en transporte?",
+            "¿Seguro especial requerido?",
+            "¿Empresa internacional?",
+            "¿Convenios bilaterales?"
+        ]
+    },
+    {
+        name: "Extranjeros",
+        title: "Revisando Arquetipo Extranjeros...",
+        questions: [
+            "¿Personal extranjero con CUIL/ART?",
+            "¿Cumplió requisitos migratorios?",
+            "¿Licencias extranjeras?",
+            "¿No es transporte ni construcción?"
+        ]
+    }
+];
+
+let currentStep = 0;
+let userAnswers = {};
+const app = document.getElementById("app");
+
+function renderInicio() {
+    app.innerHTML = `
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-[#003776] mb-6">
+                Clasificación de Arquetipos SGC
+            </h1>
+            <p class="text-gray-600 mb-8">
+                Responda las preguntas. Con un solo "Sí" se define el arquetipo.
+            </p>
+            <button onclick="start()"
+                class="px-8 py-4 bg-[#0059D1] text-white rounded-full text-xl hover:bg-[#003776]">
+                Comenzar
+            </button>
+        </div>
+    `;
+}
+
+function start() {
+    renderStep();
+}
+
+function renderStep() {
+    const step = archetypes[currentStep];
+    const answers = userAnswers[currentStep] || {};
+
+    let html = step.questions.map((q, i) => `
+        <div class="mb-4 p-5 bg-gray-50 rounded-xl">
+            <p class="mb-3">${q}</p>
+            <label>
+                <input type="radio" name="q${i}" value="yes" 
+                onchange="answer('${i}','yes')" ${answers[i]=='yes'?'checked':''}>
+                <span class="custom-radio ml-2">Sí</span>
+            </label>
+            <label class="ml-4">
+                <input type="radio" name="q${i}" value="no"
+                onchange="answer('${i}','no')" ${answers[i]=='no'?'checked':''}>
+                <span class="custom-radio ml-2">No</span>
+            </label>
+        </div>
+    `).join("");
+
+    app.innerHTML = `
+        <h2 class="text-2xl font-bold text-[#003776] mb-6">${step.title}</h2>
+        ${html}
+        <button onclick="next()" 
+            class="mt-6 px-6 py-3 bg-[#0059D1] text-white rounded-full">
+            Continuar
+        </button>
+    `;
+}
+
+function answer(index, value) {
+    if (!userAnswers[currentStep]) userAnswers[currentStep] = {};
+    userAnswers[currentStep][index] = value;
+}
+
+function next() {
+    const answers = userAnswers[currentStep];
+    
+    for (let i in answers) {
+        if (answers[i] === "yes") {
+            renderResult(archetypes[currentStep].name);
+            return;
+        }
+    }
+
+    currentStep++;
+
+    if (currentStep >= archetypes.length) {
+        renderResult("Programa de Seguridad e Higiene (ART)");
+    } else {
+        renderStep();
+    }
+}
+
+function renderResult(result) {
+    app.innerHTML = `
+        <h2 class="text-3xl font-bold text-[#003776] mb-4">
+            Resultado
+        </h2>
+        <p class="text-xl mb-6">
+            Arquetipo: <strong>${result}</strong>
+        </p>
+        <button onclick="restart()"
+            class="px-6 py-3 bg-[#0059D1] text-white rounded-full">
+            Reiniciar
+        </button>
+    `;
+}
+
+function restart() {
+    currentStep = 0;
+    userAnswers = {};
+    renderInicio();
+}
+
+renderInicio();
+</script>
+
+</body>
+</html>
