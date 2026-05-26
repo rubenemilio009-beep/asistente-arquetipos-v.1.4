@@ -1,120 +1,64 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistente de Arquetipos SGC</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente de Arquetipos SGC</title>
 
-    <!-- ✅ FIX CRÍTICO -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f6fb;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f6fb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
 
-        #app {
-            width: 100%;
-            max-width: 800px;
-        }
+input[type="radio"]{display:none;}
 
-        input[type="radio"] {
-            display: none;
-        }
+.custom-radio{
+cursor:pointer;
+padding:0.4rem 1rem;
+border-radius:9999px;
+border:1px solid #ccc;
+}
 
-        .custom-radio {
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            border: 1px solid #d1d5db;
-            transition: all 0.2s;
-        }
-
-        input[type="radio"]:checked + .custom-radio {
-            background-color: #0059D1;
-            color: #fff;
-            border-color: #003776;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-    </style>
+input[type="radio"]:checked + .custom-radio{
+background:#0059D1;
+color:white;
+}
+</style>
 </head>
 
 <body>
 
-<div id="app" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-4xl"></div>
+<div id="app" class="bg-white p-10 rounded-3xl shadow-xl w-full max-w-3xl"></div>
 
 <script>
 
-const archetypes = [
-{
-name: "Transporte",
-title: "Revisando Arquetipo de Transporte ...",
-questions: [
-"¿El servicio o el personal se enmarcan en el Convenio Colectivo de Trabajo 40/89 (Transporte Automotor de Cargas)?",
-"¿El servicio utiliza vehículos habilitados para transporte de carga, con choferes registrados y seguros correspondientes?",
-"¿La actividad incluye traslados interprovinciales o internacionales que requieran gestión de viáticos y control de jornada?",
-"¿Se requiere llevar una planilla de control de kilómetros, un registro de carga/descarga o el uso de elementos de seguridad específicos del vehículo?",
-"¿El personal contratado cumple principalmente funciones como chofer, peón de carga, custodio de mercadería o operador logístico?"
-]
-},
-{
-name: "UOCRA",
-title: "Revisando Arquetipo UOCRA ...",
-questions: [
-"¿El personal está encuadrado bajo el Convenio Colectivo de Trabajo 76/75 (UOCRA)?",
-"¿Las tareas a realizar incluyen obra civil, montaje, excavación, demolición o instalaciones técnicas (eléctricas, sanitarias, etc.)?",
-"¿Se ejecutarán trabajos físicos en la planta, campo o sobre la infraestructura, con intervención de gremios de la construcción?",
-"¿Para contratar al personal, se debe recurrir a la Bolsa de Trabajo de la UOCRA?",
-"¿La actividad está explícitamente alcanzada por el Decreto 911/96 y exige la presentación de un Programa de Seguridad e Higiene específico para la construcción?"
-]
-},
-{
-name: "Transporte Extranjero",
-title: "Revisando Arquetipo Transporte Extranjero ...",
-questions: [
-"¿El servicio implica el cruce de fronteras o el transporte entre países, requiriendo documentación aduanera?",
-"¿El personal que realiza el transporte es extranjero y cuenta con residencia legal, CUIL y ART vigente en Argentina para esta tarea?",
-"¿Se requiere un seguro de accidentes personales para el personal de transporte debido a que no tienen una relación laboral directa en Argentina?",
-"¿La empresa contratista está registrada como operador de transporte internacional o su sede principal está en el extranjero?",
-"¿Aplican normas de reciprocidad o convenios bilaterales entre países para la regulación laboral o previsional del servicio?"
-]
-},
-{
-name: "Extranjeros",
-title: "Revisando Arquetipo Extranjeros ...",
-questions: [
-"¿El personal que realizará tareas operativas en planta o campo es extranjero y posee residencia (precaria o permanente), CUIL y ART activa?",
-"¿La empresa contratista tuvo que cumplir con requisitos migratorios y laborales específicos en Argentina para traer a este personal?",
-"¿Se deben verificar licencias, seguros o certificados técnicos emitidos en el país de origen del personal o la empresa?",
-"¿La actividad implica tareas operativas realizadas por extranjeros pero NO es un servicio de visita técnica, ni de transporte, ni de construcción (UOCRA)?"
-]
-}
-];
+const archetypes = [/* TU MISMO ARRAY SIN CAMBIOS */];
 
 let currentStep = 0;
 let userAnswers = {};
+let isResultScreen = false;
+
 const app = document.getElementById("app");
 
-function renderInicio() {
+function renderInicio(){
 app.innerHTML = `
-<div class="text-center">
-<h1 class="text-4xl font-bold text-[#003776] mb-6">
+<h1 class="text-3xl font-bold text-[#003776] mb-6">
 Asistente de Clasificación de Arquetipos SGC
 </h1>
-<p class="text-lg text-gray-600 mb-8">
+<p class="mb-6">
 Bienvenido. Esta herramienta le ayudará a identificar el arquetipo correcto para el servicio a contratar. Lea atentamente cada pregunta. Con una sola respuesta afirmativa ('Sí'), el arquetipo quedará definido. Proceda en el orden presentado.
 </p>
-<button onclick="start()" class="px-8 py-4 bg-[#0059D1] text-white rounded-full text-xl hover:bg-[#003776]">
+<button onclick="start()" class="px-6 py-3 bg-[#0059D1] text-white rounded-full">
 Comenzar
 </button>
-</div>`;
+`;
 }
 
 function start(){ renderStep(); }
@@ -124,30 +68,26 @@ const step = archetypes[currentStep];
 const answers = userAnswers[currentStep] || {};
 
 let html = step.questions.map((q,i)=>`
-<div class="mb-4 bg-gray-50 p-6 rounded-xl border">
-<p class="mb-3">${q}</p>
-
+<div class="mb-4">
+<p>${q}</p>
 <label>
-<input type="radio" name="q-${i}" value="yes" onchange="answer(${i},'yes')" ${answers[i]=='yes'?'checked':''}>
-<span class="custom-radio ml-2">Sí</span>
+<input type="radio" name="q${i}" value="yes" onchange="answer(${i},'yes')" ${answers[i]=='yes'?'checked':''}>
+<span class="custom-radio">Sí</span>
 </label>
-
-<label class="ml-4">
-<input type="radio" name="q-${i}" value="no" onchange="answer(${i},'no')" ${answers[i]=='no'?'checked':''}>
-<span class="custom-radio ml-2">No</span>
+<label>
+<input type="radio" name="q${i}" value="no" onchange="answer(${i},'no')" ${answers[i]=='no'?'checked':''}>
+<span class="custom-radio">No</span>
 </label>
-
 </div>
 `).join("");
 
 app.innerHTML = `
-<h2 class="text-2xl font-bold text-[#003776] mb-6">${step.title}</h2>
-
+<h2 class="text-xl text-[#003776] mb-4">${step.title}</h2>
 ${html}
 
 <div class="flex justify-between mt-6">
-<button onclick="goBack()" class="px-6 py-3 bg-gray-200 rounded-full">Volver</button>
-<button onclick="next()" class="px-6 py-3 bg-[#0059D1] text-white rounded-full">
+<button onclick="goBack()">Volver</button>
+<button onclick="next()" class="bg-[#0059D1] text-white px-4 py-2 rounded">
 Revisar y Continuar
 </button>
 </div>
@@ -160,24 +100,27 @@ userAnswers[currentStep][i]=val;
 }
 
 function next(){
-const answers=userAnswers[currentStep];
-let found=null;
+
+const answers = userAnswers[currentStep];
+let found = null;
 
 for(let i in answers){
 if(answers[i]==='yes'){
-found=archetypes[currentStep].questions[i];
+found = archetypes[currentStep].questions[i];
 break;
 }
 }
 
 if(found){
-renderResult(archetypes[currentStep].name,found);
+isResultScreen = true;
+renderResult(archetypes[currentStep].name, found);
 return;
 }
 
 currentStep++;
 
-if(currentStep>=archetypes.length){
+if(currentStep >= archetypes.length){
+isResultScreen = true;
 renderNoResult();
 }else{
 renderStep();
@@ -185,59 +128,62 @@ renderStep();
 }
 
 function renderResult(name,question){
-app.innerHTML=`
-<h2 class="text-3xl font-bold text-[#0059D1] mb-4">¡Arquetipo Identificado!</h2>
+app.innerHTML = `
+<h2 class="text-2xl font-bold text-[#0059D1] mb-4">¡Arquetipo Identificado!</h2>
 
-<p class="mb-2 text-xl"><strong>Arquetipo:</strong> ${name}</p>
-<p class="mb-6">Se identificó este arquetipo porque: "${question}"</p>
+<p><strong>Arquetipo:</strong> ${name}</p>
+<p class="mb-4">Se identificó este arquetipo porque: "${question}"</p>
 
-<p class="text-sm text-gray-600 mb-6">
-Nota Importante:
-Use esta herramienta como una guía. El resultado puede no ser 100% preciso o exhaustivo.
+<p class="text-sm mb-6">
+Nota Importante: Use esta herramienta como una guía. El resultado puede no ser 100% preciso o exhaustivo.
 </p>
 
-<div class="flex gap-4 justify-center">
-<button onclick="restart()" class="px-6 py-3 bg-[#0059D1] text-white rounded-full">
+<button onclick="restart()" class="bg-[#0059D1] text-white px-4 py-2 rounded mr-2">
 Volver a Empezar
 </button>
-<button onclick="goBack()" class="px-6 py-3 bg-gray-200 rounded-full">
-Volver
-</button>
-</div>
+
+<button onclick="goBack()">Volver</button>
 `;
 }
 
 function renderNoResult(){
-app.innerHTML=`
-<h2 class="text-3xl font-bold text-red-600 mb-4">Arquetipo no identificado automáticamente</h2>
+app.innerHTML = `
+<h2 class="text-2xl text-red-600 mb-4">
+Arquetipo no identificado automáticamente
+</h2>
 
 <p class="mb-6">
-Será la ART quien defina si aplica Programa de Seguridad e Higiene.
+La ART definirá si corresponde Programa de Seguridad e Higiene.
 </p>
 
-<div class="flex gap-4 justify-center">
-<button onclick="restart()" class="px-6 py-3 bg-[#0059D1] text-white rounded-full">
+<button onclick="restart()" class="bg-[#0059D1] text-white px-4 py-2 rounded mr-2">
 Volver a Empezar
 </button>
-<button onclick="goBack()" class="px-6 py-3 bg-gray-200 rounded-full">
-Volver
-</button>
-</div>
+
+<button onclick="goBack()">Volver</button>
 `;
 }
 
 function goBack(){
+
+if(isResultScreen){
+    isResultScreen = false;
+    renderStep();
+    return;
+}
+
 if(currentStep>0){
-currentStep--;
-renderStep();
+    currentStep--;
+    renderStep();
 }else{
-renderInicio();
+    renderInicio();
 }
 }
 
 function restart(){
-currentStep=0;
-userAnswers={};
+currentStep = 0;
+userAnswers = {};
+isResultScreen = false;
 renderInicio();
 }
 
