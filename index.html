@@ -89,6 +89,13 @@ questions: [
 ]
 },
 {
+name: "Arquetipo Oficinas Necochea y San Lorenzo",
+title: "Revisando Arquetipo Oficinas Necochea y San Lorenzo ...",
+questions: [
+"¿El trabajo se realizará exclusivamente en las Oficinas de Necochea o San Lorenzo y las tareas a ejecutar NO implican riesgos críticos para la vida de los operadores, tales como trabajo en altura, conducción de vehículos, trabajo en caliente, ingreso a espacios confinados, manipulación de energías eléctricas u otros riesgos críticos equivalentes?"
+]
+},
+{
 name: "Extranjeros",
 title: "Revisando Arquetipo Extranjeros ...",
 questions: [
@@ -202,6 +209,11 @@ app.innerHTML=`
 Nota Importante: Use esta herramienta como una guía. El resultado puede no ser 100% preciso o exhaustivo.
 </p>
 
+${name === "Arquetipo Oficinas Necochea y San Lorenzo" ? `
+<p class="text-sm text-gray-600 mb-6">
+<strong>Nota HSE:</strong> Se sugiere realizar la comprobación correspondiente con el área de HSE para validar que las tareas no impliquen riesgos críticos para la vida de los operadores.
+</p>` : ""}
+
 <div class="flex gap-4 justify-center">
 <button onclick="restart()" class="px-6 py-3 bg-[#0059D1] text-white rounded-full">
 Volver a Empezar
@@ -243,7 +255,7 @@ Contactos:
 
 <ul class="list-disc ml-6">
 <li>Daniel.coulon@riotinto.com</li>
-<li>Miguel.almiron@riotinto.com</li>
+<li>florencia.cardozo@riotinto.com</li>
 <li>Santiago.acevedo@riotinto.com</li>
 </ul>
 
